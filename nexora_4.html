@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexora — Websites for Small Businesses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Poppins:wght@300;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0d0d0d;
+      --cream: #f5f0e8;
+      --warm: #f0e8d5;
+      --accent: #e8541a;
+      --accent2: #f2a65a;
+      --muted: #7a7065;
+      --card: #ffffff;
+      --border: rgba(13,13,13,0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ─── INTRO OVERLAY ─── */
+    #intro {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100vh;
+      background: radial-gradient(circle at center, #0a0a0a, #000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 99999;
+      transition: opacity 0.9s ease, visibility 0.9s ease;
+    }
+
+    #intro.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 800;
+      letter-spacing: 6px;
+      color: white;
+      opacity: 0;
+      transform: translateY(40px) scale(1.05);
+      filter: blur(8px);
+      animation: introReveal 1.8s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    .intro-logo span {
+      color: #ff7a00;
+      text-shadow: 0 0 30px rgba(255,122,0,0.7);
+    }
+
+    .intro-tagline {
+      margin-top: 15px;
+      color: #aaa;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: introFadeIn 1s ease forwards;
+      animation-delay: 1.5s;
+    }
+
+    .intro-particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 50%;
+      animation: introFloat linear infinite;
+    }
+
+    @keyframes introFloat {
+      from { transform: translateY(100vh); opacity: 0; }
+      20%  { opacity: 1; }
+      to   { transform: translateY(-10vh); opacity: 0; }
+    }
+
+    @keyframes introReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes introFadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Main site fades in after intro */
+    #main-site {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    #main-site.visible {
+      opacity: 1;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 4rem;
+      background: rgba(245,240,232,0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--accent); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    nav a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--ink); }
+
+    .nav-cta {
+      background: var(--ink);
+      color: var(--cream) !important;
+      padding: 0.6rem 1.4rem;
+      border-radius: 100px;
+      font-size: 0.875rem !important;
+      transition: background 0.2s, transform 0.2s !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--accent) !important;
+      color: #fff !important;
+      transform: translateY(-1px);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 8rem 4rem 4rem;
+      gap: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-circle {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,84,26,0.12) 0%, transparent 70%);
+      right: -100px; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--warm);
+      border: 1px solid rgba(232,84,26,0.25);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.5); }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 5.5vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.04em;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 420px;
+      margin-top: 1.5rem;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      align-items: center;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      padding: 0.85rem 2rem;
+      border-radius: 100px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(232,84,26,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(232,84,26,0.4);
+    }
+
+    .btn-ghost {
+      color: var(--ink);
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: gap 0.2s;
+    }
+
+    .btn-ghost:hover { gap: 0.7rem; }
+
+    /* ─── HERO RIGHT: MOCKUP ─── */
+    .hero-visual {
+      position: relative;
+      animation: fadeUp 0.9s 0.2s ease both;
+    }
+
+    .browser-mock {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 30px 80px rgba(13,13,13,0.15), 0 0 0 1px var(--border);
+      overflow: hidden;
+    }
+
+    .browser-bar {
+      background: #f4f4f4;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .browser-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    .browser-dot:nth-child(1) { background: #ff5f57; }
+    .browser-dot:nth-child(2) { background: #febc2e; }
+    .browser-dot:nth-child(3) { background: #28c840; }
+
+    .browser-url {
+      background: #fff;
+      border-radius: 6px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.72rem;
+      color: #999;
+      margin-left: 0.5rem;
+      flex: 1;
+    }
+
+    .mock-content {
+      padding: 2rem;
+      background: linear-gradient(135deg, #0d0d0d 0%, #1a1a2e 100%);
+    }
+
+    .mock-nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .mock-logo { 
+      width: 60px; height: 10px;
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    .mock-links { display: flex; gap: 0.6rem; }
+    .mock-link {
+      width: 35px; height: 8px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+    }
+
+    .mock-hero-text {
+      margin-bottom: 1.5rem;
+    }
+
+    .mock-h1-line {
+      height: 14px;
+      background: #fff;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .mock-h1-line:nth-child(1) { width: 80%; }
+    .mock-h1-line:nth-child(2) { width: 60%; background: var(--accent); }
+
+    .mock-p-line {
+      height: 7px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 4px;
+      margin-bottom: 0.4rem;
+    }
+
+    .mock-p-line:nth-child(1) { width: 100%; }
+    .mock-p-line:nth-child(2) { width: 85%; }
+    .mock-p-line:nth-child(3) { width: 70%; }
+
+    .mock-cta-btn {
+      width: 90px; height: 28px;
+      background: var(--accent);
+      border-radius: 20px;
+      margin-top: 1rem;
+    }
+
+    .mock-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .mock-card {
+      background: rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 0.75rem;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .mock-card-icon {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      background: var(--accent);
+      margin-bottom: 0.5rem;
+      opacity: 0.8;
+    }
+
+    .mock-card-line {
+      height: 6px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 3px;
+      margin-bottom: 0.3rem;
+    }
+
+    .mock-card-line:nth-child(2) { width: 90%; }
+    .mock-card-line:nth-child(3) { width: 70%; opacity: 0.5; }
+
+    .floating-tag {
+      position: absolute;
+      background: #fff;
+      border-radius: 12px;
+      padding: 0.6rem 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      font-size: 0.78rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .tag-1 {
+      bottom: -20px; left: -30px;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .tag-2 {
+      top: 30px; right: -30px;
+      animation: float 4s ease-in-out infinite 2s;
+    }
+
+    .tag-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── MARQUEE ─── */
+    .marquee-wrap {
+      overflow: hidden;
+      background: var(--ink);
+      color: var(--cream);
+      padding: 1rem 0;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 3rem;
+      animation: marquee 18s linear infinite;
+      width: max-content;
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      opacity: 0.7;
+    }
+
+    .marquee-dot { color: var(--accent); font-size: 1.2rem; }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ─── SECTIONS ─── */
+    section { padding: 7rem 4rem; }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      max-width: 600px;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin-top: 1rem;
+      font-weight: 300;
+    }
+
+    /* ─── SERVICES ─── */
+    .services {
+      background: var(--warm);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .service-card {
+      background: var(--cream);
+      border-radius: 20px;
+      padding: 2.5rem;
+      border: 1px solid var(--border);
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(232,84,26,0.04) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(13,13,13,0.1);
+    }
+
+    .service-card:hover::after { opacity: 1; }
+
+    .service-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .service-num {
+      position: absolute;
+      top: 2rem; right: 2rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 4rem;
+      font-weight: 800;
+      color: rgba(13,13,13,0.04);
+      line-height: 1;
+    }
+
+    .service-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .service-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .how-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .steps {
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      gap: 1.5rem;
+      position: relative;
+      padding-bottom: 2.5rem;
+    }
+
+    .step:last-child { padding-bottom: 0; }
+
+    .step-line {
+      position: absolute;
+      left: 19px;
+      top: 42px;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+
+    .step:last-child .step-line { display: none; }
+
+    .step-num {
+      width: 40px; height: 40px;
+      min-width: 40px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-body h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+
+    .step-body p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    /* stats panel */
+    .stats-panel {
+      background: var(--ink);
+      color: var(--cream);
+      border-radius: 24px;
+      padding: 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+
+    .stat h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat p {
+      font-size: 0.85rem;
+      color: rgba(245,240,232,0.5);
+      margin-top: 0.3rem;
+      font-weight: 300;
+    }
+
+    /* ─── PRICING ─── */
+    .pricing { background: var(--warm); }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 4rem;
+      align-items: start;
+    }
+
+    .pricing-card {
+      background: var(--cream);
+      border-radius: 24px;
+      padding: 2.5rem;
+      border: 1px solid var(--border);
+      transition: transform 0.3s;
+    }
+
+    .pricing-card.featured {
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      transform: scale(1.05);
+      position: relative;
+    }
+
+    .pricing-card.featured:hover { transform: scale(1.05) translateY(-4px); }
+    .pricing-card:not(.featured):hover { transform: translateY(-4px); }
+
+    .popular-badge {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+
+    .plan-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .plan-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin: 1rem 0 0.3rem;
+    }
+
+    .plan-price sup {
+      font-size: 1.2rem;
+      font-weight: 600;
+      vertical-align: super;
+    }
+
+    .plan-period {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+
+    .featured .plan-period { color: rgba(245,240,232,0.5); }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .plan-features li {
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 300;
+    }
+
+    .plan-features li::before {
+      content: '✓';
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: rgba(232,84,26,0.12);
+      color: var(--accent);
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .featured .plan-features li::before {
+      background: rgba(232,84,26,0.25);
+    }
+
+    .plan-btn {
+      display: block;
+      text-align: center;
+      padding: 0.85rem;
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .plan-btn-outline {
+      border: 1.5px solid var(--border);
+      color: var(--ink);
+    }
+
+    .plan-btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    .plan-btn-filled {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .plan-btn-filled:hover { background: #d44514; }
+
+    /* ─── TESTIMONIALS ─── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .testi-card {
+      background: var(--warm);
+      border-radius: 20px;
+      padding: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    .stars {
+      color: var(--accent);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      letter-spacing: 2px;
+    }
+
+    .testi-text {
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: var(--ink);
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+    }
+
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .author-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #fff;
+    }
+
+    .author-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .author-biz {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* ─── CTA SECTION ─── */
+    .cta-section {
+      background: var(--ink);
+      color: var(--cream);
+      text-align: center;
+      border-radius: 32px;
+      margin: 0 4rem 7rem;
+      padding: 6rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,84,26,0.2) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      position: relative;
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .cta-section h2 em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .cta-section p {
+      color: rgba(245,240,232,0.55);
+      font-size: 1rem;
+      font-weight: 300;
+      max-width: 400px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .btn-cta-white {
+      background: #fff;
+      color: var(--ink);
+      padding: 0.9rem 2.2rem;
+      border-radius: 100px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-cta-white:hover { background: var(--accent); color: #fff; }
+
+    .btn-cta-ghost {
+      color: rgba(245,240,232,0.55);
+      font-size: 0.9rem;
+      text-decoration: none;
+      padding: 0.9rem 1.5rem;
+      transition: color 0.2s;
+    }
+
+    .btn-cta-ghost:hover { color: #fff; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+
+    .footer-logo span { color: var(--accent); }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      nav ul { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 3rem; gap: 3rem; }
+      .hero-visual .tag-2 { display: none; }
+      .services-grid, .pricing-grid, .testimonials-grid { grid-template-columns: 1fr; }
+      .pricing-card.featured { transform: none; }
+      .how-wrap { grid-template-columns: 1fr; gap: 3rem; }
+      section { padding: 5rem 1.5rem; }
+      .cta-section { margin: 0 1.5rem 5rem; padding: 4rem 2rem; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ INTRO ANIMATION ══ -->
+  <div id="intro">
+    <div class="intro-logo">Nex<span>ora</span></div>
+    <div class="intro-tagline">Building What's Next</div>
+  </div>
+
+  <!-- ══ MAIN SITE ══ -->
+  <div id="main-site">
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="logo">Nex<span>ora</span></a>
+    <ul>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#testimonials">Clients</a></li>
+      <li><a href="#contact" class="nav-cta">Get Started</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">✦ Built for small businesses</div>
+      <h1>Your business deserves a <em>stunning</em> website.</h1>
+      <p class="hero-sub">Nexora crafts beautiful, fast, and affordable websites that help small businesses grow online — without the agency price tag.</p>
+      <div class="hero-actions">
+        <a href="#pricing" class="btn-primary">See Our Plans</a>
+        <a href="#how" class="btn-ghost">How it works →</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="browser-mock">
+        <div class="browser-bar">
+          <div class="browser-dot"></div>
+          <div class="browser-dot"></div>
+          <div class="browser-dot"></div>
+          <div class="browser-url">www.yourbusiness.com</div>
+        </div>
+        <div class="mock-content">
+          <div class="mock-nav-bar">
+            <div class="mock-logo"></div>
+            <div class="mock-links">
+              <div class="mock-link"></div>
+              <div class="mock-link"></div>
+              <div class="mock-link"></div>
+            </div>
+          </div>
+          <div class="mock-hero-text">
+            <div class="mock-h1-line"></div>
+            <div class="mock-h1-line"></div>
+            <div class="mock-p-line"></div>
+            <div class="mock-p-line"></div>
+            <div class="mock-p-line"></div>
+            <div class="mock-cta-btn"></div>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card">
+              <div class="mock-card-icon"></div>
+              <div class="mock-card-line"></div>
+              <div class="mock-card-line"></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon" style="background:#f2a65a"></div>
+              <div class="mock-card-line"></div>
+              <div class="mock-card-line"></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon" style="background:#fff;opacity:0.3"></div>
+              <div class="mock-card-line"></div>
+              <div class="mock-card-line"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="floating-tag tag-1">
+        <span style="font-size:1rem">🚀</span> Launched in 7 days
+      </div>
+      <div class="floating-tag tag-2">
+        <div class="tag-dot" style="background:#28c840"></div> 99.9% uptime
+      </div>
+    </div>
+    <div class="hero-bg-circle"></div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Custom Design</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Mobile Responsive</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> SEO Optimized</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Fast Delivery</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Affordable Pricing</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Ongoing Support</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> E-commerce Ready</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Analytics Included</div>
+      <!-- duplicate for seamless loop -->
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Custom Design</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Mobile Responsive</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> SEO Optimized</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Fast Delivery</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Affordable Pricing</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Ongoing Support</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> E-commerce Ready</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Analytics Included</div>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services" class="services">
+    <div class="section-label">What We Do</div>
+    <h2 class="section-title">Everything your website needs to succeed.</h2>
+    <p class="section-sub">From a simple landing page to a full online store — we handle every detail so you can focus on running your business.</p>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-num">01</div>
+        <div class="service-icon">🎨</div>
+        <h3>Custom Web Design</h3>
+        <p>Pixel-perfect designs tailored to your brand identity. No templates, no cookie-cutter layouts — just unique websites that make an impression.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-num">02</div>
+        <div class="service-icon">📱</div>
+        <h3>Mobile-First Development</h3>
+        <p>Over 60% of users browse on phones. Your site will look flawless on every screen — from desktops to the smallest smartphones.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-num">03</div>
+        <div class="service-icon">🔍</div>
+        <h3>SEO & Performance</h3>
+        <p>We build fast, search-engine-optimized websites that rank on Google and load in under 2 seconds — so customers find you first.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-num">04</div>
+        <div class="service-icon">🛒</div>
+        <h3>E-commerce Stores</h3>
+        <p>Sell products online with ease. We build secure, beautiful online stores with smooth checkout flows and inventory management.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-num">05</div>
+        <div class="service-icon">✏️</div>
+        <h3>Content Management</h3>
+        <p>Update your website yourself with an easy-to-use CMS. Change text, add photos, post blogs — no coding knowledge needed.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-num">06</div>
+        <div class="service-icon">🛡️</div>
+        <h3>Maintenance & Support</h3>
+        <p>We don't disappear after launch. Get ongoing support, security updates, performance monitoring, and peace of mind every month.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <div class="how-wrap">
+      <div>
+        <div class="section-label">Our Process</div>
+        <h2 class="section-title">From idea to live website in 7 days.</h2>
+        <p class="section-sub">Our streamlined process means you get a beautiful website fast — with zero stress on your end.</p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-line"></div>
+            <div class="step-body">
+              <h4>Discovery Call</h4>
+              <p>We learn about your business, goals, and vision. A 30-minute conversation is all we need to get started.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-line"></div>
+            <div class="step-body">
+              <h4>Design & Build</h4>
+              <p>Our team designs and develops your website. You'll get a preview to review and request changes before launch.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-line"></div>
+            <div class="step-body">
+              <h4>Review & Revise</h4>
+              <p>We fine-tune everything based on your feedback until it's exactly right — up to 3 rounds of revisions included.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h4>Launch & Grow</h4>
+              <p>We go live! Then we handle hosting, SSL, and ongoing support so your site stays fast and secure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-panel">
+        <div class="stat">
+          <h3>150+</h3>
+          <p>Websites launched for small businesses</p>
+        </div>
+        <div class="stat">
+          <h3>7d</h3>
+          <p>Average time from brief to live site</p>
+        </div>
+        <div class="stat">
+          <h3>98%</h3>
+          <p>Client satisfaction rate</p>
+        </div>
+        <div class="stat">
+          <h3>24/7</h3>
+          <p>Monitoring & uptime guarantee</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" class="pricing">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Simple, transparent pricing.</h2>
+    <p class="section-sub">No hidden fees. No surprise invoices. Pick a plan that fits your business and budget.</p>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">Starter</div>
+        <p style="font-size:0.85rem;color:var(--muted);font-weight:300">Perfect for getting online fast</p>
+        <div class="plan-price"><sup>₹</sup>14,999</div>
+        <div class="plan-period">one-time payment</div>
+        <ul class="plan-features">
+          <li>5-page website</li>
+          <li>Mobile responsive design</li>
+          <li>Contact form integration</li>
+          <li>Basic SEO setup</li>
+          <li>1 month free support</li>
+        </ul>
+        <a href="https://wa.me/918369737726?text=Hi%20Nexora!%20%F0%9F%91%8B%20I%20am%20interested%20in%20the%20*Starter%20Plan*%20to%20build%20a%20website%20for%20my%20business.%20Could%20you%20please%20share%20more%20details%20and%20help%20me%20get%20started%3F%20Thank%20you!" target="_blank" class="plan-btn plan-btn-outline">Get Started</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="popular-badge">Most Popular</div>
+        <div class="plan-name">Growth</div>
+        <p style="font-size:0.85rem;color:rgba(245,240,232,0.45);font-weight:300">For businesses ready to scale</p>
+        <div class="plan-price"><sup>₹</sup>29,999</div>
+        <div class="plan-period">one-time payment</div>
+        <ul class="plan-features">
+          <li>Up to 15 pages</li>
+          <li>Custom animations & design</li>
+          <li>Blog / CMS integration</li>
+          <li>Advanced SEO & speed</li>
+          <li>Google Analytics setup</li>
+          <li>3 months free support</li>
+        </ul>
+        <a href="https://wa.me/918369737726?text=Hi%20Nexora!%20%F0%9F%91%8B%20I%20am%20interested%20in%20the%20*Growth%20Plan*%20to%20build%20a%20website%20for%20my%20business.%20Could%20you%20please%20share%20more%20details%20and%20help%20me%20get%20started%3F%20Thank%20you!" target="_blank" class="plan-btn plan-btn-filled">Get Started</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="plan-name">Pro Store</div>
+        <p style="font-size:0.85rem;color:var(--muted);font-weight:300">Full e-commerce solution</p>
+        <div class="plan-price"><sup>₹</sup>54,999</div>
+        <div class="plan-period">one-time payment</div>
+        <ul class="plan-features">
+          <li>Full e-commerce store</li>
+          <li>Unlimited products</li>
+          <li>Payment gateway setup</li>
+          <li>Inventory management</li>
+          <li>Order & shipping system</li>
+          <li>6 months free support</li>
+        </ul>
+        <a href="https://wa.me/918369737726?text=Hi%20Nexora!%20%F0%9F%91%8B%20I%20am%20interested%20in%20the%20*Pro%20Store%20Plan*%20to%20build%20a%20website%20for%20my%20business.%20Could%20you%20please%20share%20more%20details%20and%20help%20me%20get%20started%3F%20Thank%20you!" target="_blank" class="plan-btn plan-btn-outline">Get Started</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="section-label">Client Stories</div>
+    <h2 class="section-title">Small businesses, big results.</h2>
+
+    <div class="testimonials-grid">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"Nexora built our café website in just 6 days. We started getting online table reservations within the first week. Incredible value for the price!"</p>
+        <div class="testi-author">
+          <div class="author-avatar" style="background:#e8541a">PS</div>
+          <div>
+            <div class="author-name">Priya Sharma</div>
+            <div class="author-biz">The Little Cup Café, Pune</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"I was spending lakhs on ads but had no website. Nexora gave me a professional online presence that converts visitors into customers. My sales doubled."</p>
+        <div class="testi-author">
+          <div class="author-avatar" style="background:#1a3a5c">RK</div>
+          <div>
+            <div class="author-name">Rahul Kapoor</div>
+            <div class="author-biz">Kapoor Electricals, Delhi</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"As a boutique owner, I needed an online store fast. Nexora delivered beautifully — my e-commerce site looks like it cost 5x what I paid. Highly recommend!"</p>
+        <div class="testi-author">
+          <div class="author-avatar" style="background:#2d6a4f">AM</div>
+          <div>
+            <div class="author-name">Ananya Mehta</div>
+            <div class="author-biz">Ananya's Boutique, Mumbai</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div id="contact" class="cta-section">
+    <h2>Ready to put your business <em>online</em>?</h2>
+    <p>Book a free 30-minute discovery call. No commitment, no pressure — just a conversation about your goals.</p>
+    <div class="cta-actions">
+      <a href="tel:+918369737726" class="btn-cta-white">Book a Free Call</a>
+      <a href="mailto:rishabhdube1208@gmail.com?subject=Website%20Enquiry%20%7C%20I%20Want%20to%20Build%20a%20Website&body=Hi%20Nexora%20Team%2C%0A%0AMy%20name%20is%20%5BYour%20Name%5D%20and%20I%20am%20interested%20in%20getting%20a%20website%20built%20for%20my%20business.%0A%0ABusiness%20Name%3A%20%5BYour%20Business%20Name%5D%0AType%20of%20Website%20Needed%3A%20%5Be.g.%20Business%20site%2C%20Online%20Store%2C%20Portfolio%5D%0AAdditional%20Details%3A%20%5BTell%20us%20a%20little%20about%20your%20business%20and%20what%20you%20need%5D%0A%0APlease%20get%20back%20to%20me%20at%20your%20earliest%20convenience.%0A%0AThank%20you!" class="btn-cta-ghost">Or email us →</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Nex<span>ora</span></div>
+    <ul class="footer-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#how">Process</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="footer-copy">© 2026 Nexora. All rights reserved.</div>
+  </footer>
+
+  </div><!-- /#main-site -->
+
+  <script>
+    // ── Spawn particles inside intro ──
+    const intro = document.getElementById('intro');
+    for (let i = 0; i < 45; i++) {
+      const p = document.createElement('div');
+      p.className = 'intro-particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (6 + Math.random() * 6) + 's';
+      p.style.animationDelay = (Math.random() * 4) + 's';
+      intro.appendChild(p);
+    }
+
+    // ── Play intro once per session ──
+    const mainSite = document.getElementById('main-site');
+
+    if (sessionStorage.getItem('nexoraIntroPlayed')) {
+      // Already seen — skip straight to site
+      intro.style.display = 'none';
+      mainSite.classList.add('visible');
+    } else {
+      sessionStorage.setItem('nexoraIntroPlayed', 'true');
+      // Show intro for 3.2s, then fade out and reveal site
+      setTimeout(() => {
+        intro.classList.add('hidden');
+        setTimeout(() => {
+          intro.style.display = 'none';
+          mainSite.classList.add('visible');
+        }, 900); // matches CSS transition duration
+      }, 3200);
+    }
+  </script>
+
+</body>
+</html>
